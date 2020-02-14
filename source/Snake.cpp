@@ -35,6 +35,10 @@ void Snake::setHungry(){
     hungry--;
 }
 
+void Snake::setHungry(int x){
+    hungry = x;   
+}
+
 void Snake::setFullHungry(){
     hungry=100;
 }

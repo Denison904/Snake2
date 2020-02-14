@@ -11,6 +11,7 @@ class Snake{
     void setAlive();
     void setBody();
     void setHungry();
+    void setHungry(int x);
     void setFullHungry();
     void setCourse(int x);
     void setMove(int x, int y);

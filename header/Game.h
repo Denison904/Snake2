@@ -10,7 +10,7 @@ class Game{
     void Test(){
         int x = 5, y = 5;
         snake = new Snake[1];
-        snake[1] = Snake(0,5,5);
+        snake[0] = Snake(0,5,5);
         if(checkSnake(x ,y )){
             std::cout<<"Y\n";
         }else{

@@ -3,8 +3,6 @@
 Snake::Snake(int n, int x, int y){
     body =4;
     number = n;
-    TailX.resize(body);
-    TailY.resize(body);
     for (int i = 0; i < body; i++)
     {
         TailX.push_back(x+i);

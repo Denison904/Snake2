@@ -41,8 +41,6 @@
 
 int main(){
     char a;
-    Game g(1,1,10,10);
-    g.Test();
     std::cout<<"Enter algoritm (s/g/b/r/p/..)\n";
     std::cin>>a;
     switch (a)

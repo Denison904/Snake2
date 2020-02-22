@@ -1,24 +1,48 @@
-#include "Game.h"
+#include "../header/Game.h"
+
+bool operator==(const std::vector<int>& left, const std::vector<int>& right){
+    if(left.size()==right.size()){
+        for (int i = 0; i < right.size(); i++)
+        {
+            if (left[i]!=right[i])
+            {
+                return false;
+            }
+            
+        }
+        return true;
+        
+    }else
+    {
+        return false;
+    }
+    
+}
 
 Game::Game(int n, int r, int high, int width){
-    if (n*4<(high-2)*(-2+width))
+    if (n*4>(high-2)*(-2+width))
     {
         std::cout<<"Error (space)!\n";
         exit(1);
     }
+    int stepX, stepY;
+    stepX= 0;
+    stepY=int((high-2)/(n+2));
 
     snake = new Snake[n];
-
+    for (int i = 0; i < n; i++)
+    {
+        snake[i]= Snake(i,width/(n+1)+stepX*i,high/(n+1)+i*stepY);
+    }
+    
     this->high=high;
     this->width=width;
     this->numofSnake=n;
-    int stepX, stepY;
+
     radius = r;
     scan = new int[r*r-1];
     char a;
-    
-    stepX= 0;
-    stepY=int((high-2)/(n+2));;   
+       
     
     std::cout<<"Do u want add border?\n";
     std::cin>>a;
@@ -49,7 +73,7 @@ Game::Game(int n, int r, int high, int width){
     if((width-2)*(high-2)>100)
         numofFood = (width-2)*(high-2)/100;
     else
-        numofFood =1;
+        numofFood =width*high/10;
     food =new int*[numofFood];
     srand(time(NULL));
     for (int i = 0; i < numofFood; i++)
@@ -57,14 +81,14 @@ Game::Game(int n, int r, int high, int width){
         food[i]=new int[2];
         food[i][0]=rand()%(width-2)+1;//0 - Ox
         food[i][1]=rand()%(high-2)+1;//1 - Oy
-        if (checkFood(food[i][0],food[i][1])||checkBorder(food[i][0], food[i][1])||checkSnake(food[i][0], food[i][1]))
-        {
-            
-        }
+        // if (checkFood(food[i][0],food[i][1]) &&checkBorder(food[i][0], food[i][1])&&checkSnake(food[i][0], food[i][1]))
+        // {
+        //     i--;
+        // }
         
     }   
     
-    
+    step =0;
 }
 
 
@@ -130,7 +154,7 @@ void Game::Logic(){
 void Game::Drow(){
     if (numofAlive>0)
 	{
-		//system("cls");
+		std::system("clear");
 		for (int i = 0; i < high; i++)
 		{
 			for (int j = 0; j < width; j++)
@@ -145,19 +169,22 @@ void Game::Drow(){
                 }
 				else if (checkSnake(j, i))
 				{
-                    for (int k = 0; k < numofSnake; k++)
-                    {
-                        if (checkHead(j,i,k))
-                        {
-                            std::cout<<"O";
-                            break;
-                        }                  
-                        else{
-                            std::cout << "o";
-                            break;
-                        }
-                    	
-                    }
+                    // for (int k = 0; k < numofSnake; k++)
+                    // {
+                    //     if (snake[k].getAlive())
+                    //     {
+                    //         if (checkHead(j,i,k))
+                    //         {
+                    //             std::cout<<"@";
+                    //             break;
+                    //         }                  
+                    //         else{
+                    //             std::cout << "o";
+                    //             break;
+                    //         }
+                    //     }
+                    // }
+                    std::cout<<"o";
                 }
 				else  if (checkFood(j, i)) {
 					std::cout << "F";
@@ -231,22 +258,26 @@ std::vector<int> Game::Scan(int num){
     std::vector<int> inp;
     newX = snake[num].getTailX(0)-radius;
     newY = snake[num].getTailY(0)-radius;
-    for (int i = 0; i < 2*radius+1; i++)//y
-    {
-        for (int j = 0; j < 2*radius+1; j++)//x
+    int k=0;
+    for (int i = -radius; i <= radius; i++)
         {
-            if (checkBorder(j,i)||checkEnemy(j,i,num))
+            for (int j = -radius; j <= radius; j++)
             {
-                inp.push_back(-1);
-            }else if(checkFood(j,i))
-            {
-                inp.push_back(1);
-            }else
-            {
-                inp.push_back(0);
-            }            
+                if (i==0&&j==0)
+                {
+                    
+                }else if (checkFood(j,i))
+                {
+                    inp.push_back(1);
+                }else if(checkSnake(j,i))
+                {
+                    inp.push_back(-1);
+                }else
+                {
+                    inp.push_back(0);
+                }
+            }
         }
-    }
     return inp;
 }
 
@@ -283,7 +314,7 @@ bool Game::checkSnake(int x, int y){
         {
             for (int j = 0; j < snake[i].getBody(); j++)
             {
-                if(snake[i].getTailX(j)==x&&snake[i].getTailY(j)==y){
+                if(snake[i].getTailX(j)==x && snake[i].getTailY(j)==y){
                     return true;
                 }
             }
@@ -331,52 +362,142 @@ void Game::stady(){
         food[i][0]=rand()%(high -2)+1;
     }
     
-    std::vector<int> rr;
+    std::vector<int*> rr;
     std::vector<int**> F;
-    
+    std::vector<std::vector<int>> scanData;
     do
     {
+    //  std::vector<int> inp;
         Logic();
         Drow();
-        std::vector<int> inp;
+        std::cout<<"\n\n";
+        scanData.push_back(Scan(0));
+        int k =0;
+     
+        for (int i = -radius; i <= radius; i++)
+        {
+            for (int j = -radius; j <= radius; j++)
+            {
+                if (i==0&&j==0)
+                {
+                    std::cout<<"@";
+                }else if (scanData[scanData.size()-1][k]==0)
+                {
+                    std::cout<<" ";
+                    k++;
+                }else if(scanData[scanData.size()-1][k]==1)
+                {
+                    std::cout<<"F";
+                    k++;
+                }else
+                {
+                    std::cout<<"#";
+                    k++;
+                }
+            }
+            std::cout<<std::endl;
+        }
+        std::cout<<"After for\n";
         char a;
         a = getchar();
+        std::vector<int> inp;
+        inp.resize(1);
         switch (a)
         {
-        case 'A':case 'a':
-            inp.push_back(0);
+        case 'A':case 'a':{
+            int tmp[4] = {1,0,0,0};
+            rr.push_back(tmp);
+            inp[0]=0;
+            Input(inp);
+        }
             break;
         case 'W':case 'w':
-            inp.push_back(1);;
+        {
+            int tmp[4] = {0,1,0,0};
+            rr.push_back(tmp);
+            inp[0]=1;
+            Input(inp);
+        }
             break;
         case 'D':case 'd':
-            inp.push_back(2);
+         {
+
+            int tmp[4] = {0,0,1,0};
+            rr.push_back(tmp);
+            inp[0]=2;
+            Input(inp);
+         }
         case 'S':case 's':
-            inp.push_back(3);
+        {
+            int tmp[4] = {0,0,0,1};
+            rr.push_back(tmp);
+            inp[0]=3;
+            Input(inp);
+        }
         default:
             break;
         }
-        Input(inp);
+        
+
         F.push_back(food);
-        rr.push_back(inp[0]);
     } while (snake[0].getAlive());
-    SaveGame(rr,F);
+    SaveGame(rr,F, scanData);
 }
 
 //Finish this function (delete replay step in rr and F)
-void Game::SaveGame(std::vector<int> rr, std::vector<int**> F){
+void Game::SaveGame(std::vector<int*> rr, std::vector<int**> F, std::vector<std::vector<int>> scanData){
     std::string fileNameRR;
+    std::string fileNameInput;
     std::string fileNameFood;
     if (radius<5)
     {
-        fileNameRR = "radius"+std::to_string(radius)+"RR.txt";
+        fileNameRR = "../Trening/radius"+std::to_string(radius)+"RR.txt";
+        fileNameInput = "../Trening/radius"+std::to_string(radius)+"Input.txt";
+        fileNameFood = "../Trening/radius"+std::to_string(radius)+"Food.txt";
     }else
     {
-        fileNameRR = "radius"+std::to_string(5)+"RR.txt";
+        fileNameRR = "../radius"+std::to_string(5)+"RR.txt";
+        fileNameInput = "../radius"+std::to_string(5)+"Input.txt";
+        fileNameFood = "../radius"+std::to_string(5)+"Food.txt";
     }
-    std::fstream RR, Food;
+    std::fstream RR, Input, Food;
     RR.open(fileNameRR,std::fstream::in |std::fstream::out| std::fstream::in);
-    Food.open(fileNameFood, std::fstream::in |std::fstream::out| std::fstream::in);
-
-
+    Input.open(fileNameInput, std::fstream::in |std::fstream::out| std::fstream::in);
+    Food.open(fileNameFood, std::fstream::in | std::fstream::out| std::fstream::in);
+    for (int i = 0; i < scanData.size(); i++)
+    {   
+        for (int j = 0; j < i; j++)
+        {
+            if(scanData[i]==scanData[j]){
+                scanData.erase(scanData.begin()+j);
+                rr.erase(rr.begin()+j);
+                F.erase(F.begin()+j);
+            }
+        }
+    }
+    for (int i = 0; i < scanData.size(); i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            RR<<rr[i][j]<<" ";
+        }
+        RR<<"\n";
+        for (int j = 0; j < scanData[i].size(); j++)
+        {
+            Input<<scanData[i][j]<<" ";
+        }
+        Input<<"\n";
+        for (int j = 0; j < numofFood; j++)
+        {
+            Food << F[i][j][0]<<" "<<F[i][j][1]<<" ";
+        }
+        Food<<"\n";
+    }
+    
+    
 }
+
+int Game::getNumAlive(){
+    return numofAlive;
+}
+

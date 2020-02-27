@@ -46,8 +46,8 @@ void Snake::setCourse(int x){
 }
 
 void Snake::setMove(int x, int y){
-    int tmpX = TailX[0], tmpY = TailY[0];
-    for (int i = body; i >0; i--)
+  //  int tmpX = TailX[0], tmpY = TailY[0];
+    for (int i = body-1; i >0; i--)
     {
         TailY[i]= TailY[i-1];
         TailX[i]= TailX[i-1];

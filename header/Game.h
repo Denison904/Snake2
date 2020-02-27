@@ -23,6 +23,7 @@ class Game{
     void Input(std::vector<int> x);
 
     void newFood(int num);//NEED UPGRADE THIS FUNCTION
+    void generateCurrentFood(int index);
 
     std::vector<int> Scan(int num);
 

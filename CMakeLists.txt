@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
-
 project(Snake2)
 
-set(CPPS .cpp)
+set(CMAKE_CXX_STANDARD 11)
 
-add_executable(Snake2 ${CPPS})
+file(GLOB CPPS "*.cpp")
+file(GLOB CPPS2 "source/*")
+file(GLOB HS "header/*")
+
+add_executable(${PROJECT_NAME} ${CPPS} ${CPPS2} ${HS})

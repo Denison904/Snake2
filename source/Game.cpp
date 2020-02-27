@@ -89,7 +89,7 @@ Game::Game(int n, int r, int high, int width){
         // }
         
     }   
-    
+    numofAlive = numofSnake;
     step =0;
 }
 
@@ -110,44 +110,66 @@ Game::~Game(){
 }
 
 void Game::Logic(){
-    if (numofAlive=0)
+    if (numofAlive<=0)
     {
         "Game Over \n";
+        return;
     }
     else
     for (int i = 0; i < numofSnake; i++)
     {
         if(snake[i].getAlive())
         {
+            switch (snake[i].getCourse())
+            {
+            case 0: snake[i].setMove(-1, 0);
+                break;
+            case 1: snake[i].setMove(0, -1);
+                break;
+            case 2: snake[i].setMove(1, 0);
+                break;
+            case 3: snake[i].setMove(0, 1);
+                break;
+            default:
+                break;
+            }
             if(checkBorder(snake[i].getTailX(0),snake[i].getTailY(0))|| checkEnemy(snake[i].getTailX(0),snake[i].getTailY(0),i))
             {
                  snake[i].setAlive();
                  numofAlive--;
             }else
             {
+                
+                for (int j = 1; j < snake[i].getBody(); j++)
+                {
+                    if (snake[i].getTailX(0) == snake[i].getTailX(j) && snake[i].getTailY(0) == snake[i].getTailY(j))
+                    {
+                        snake[i].setAlive();
+                        numofAlive--;
+                    }
+                }
                 bool eat =false;
                 int tmpX, tmpY;
+                tmpX = snake[i].getTailX(snake[i].getBody() - 1);
+                tmpY = snake[i].getTailY(snake[i].getBody() - 1);
                 if(checkFood(snake[i].getTailX(	0),snake[i].getTailY(0)))
                 { 
                     eat = true;
                     tmpX= snake[i].getTailX(snake[i].getBody()-1);
                     tmpY= snake[i].getTailY(snake[i].getBody()-1);
+
                 }
 
-                switch (snake[i].getCourse())
+                for (int j = 0; j < numofFood; j++)
                 {
-                    case 0: snake[i].setMove(-1,0);
+                    if (food[j][0] == snake[i].getTailX(0) && food[j][1] == snake[i].getTailY(0))
+                    {
+                        generateCurrentFood(j);
                         break;
-                    case 1: snake[i].setMove(0,-1);
-                        break;
-                    case 2: snake[i].setMove(1,0);
-                        break;
-                    case 3: snake[i].setMove(0,1);
-                        break;
-                    default:
-                        break;
+                    }
                 }
-
+                
+                
                 if(eat){
                     snake[i].setTailX(tmpX);
                     snake[i].setTailY(tmpY);
@@ -164,6 +186,8 @@ void Game::Drow(){
     if (numofAlive>0)
 	{
 		std::system("clear");
+        std::system("cls");
+        std::cout << "This is Drow\n";
       //  std::system("cls");
 		for (int i = 0; i < high; i++)
 		{
@@ -263,6 +287,15 @@ void Game::newFood(int num){
     
 }
 
+void Game::generateCurrentFood(int index) {
+    do
+    {
+        food[index][0] = rand() % (width - 2) + 1;
+        food[index][1] = rand() % (high - 2) + 1;
+    } while (!checkSnake(food[index][0], food[index][1]) && !checkBorder(food[index][0], food[index][1]));
+    
+}
+
 std::vector<int> Game::Scan(int num){
     int newX, newY;
     std::vector<int> inp;
@@ -276,10 +309,10 @@ std::vector<int> Game::Scan(int num){
                 if (i==0&&j==0)
                 {
                     
-                }else if (checkFood(j,i))
+                }else if (checkFood(newX+j,newY+i))
                 {
                     inp.push_back(1);
-                }else if(checkSnake(j,i))
+                }else if(checkSnake(newX+j,newY+i) || checkBorder(newX+j,newY+i))
                 {
                     inp.push_back(-1);
                 }else
@@ -291,17 +324,18 @@ std::vector<int> Game::Scan(int num){
     return inp;
 }
 
-bool Game::checkBorder(int x, int y){
-    if(x<=0||y<=0||x>=width||y>=high){
-        return false;
-    }else{
-        for (int i = 0; i < numofBorder; i++)
-        {
-            if(x==border[i][0]&&y==border[i][1])
-                return true;
-        }
-        
+bool Game::checkBorder(int x, int y) {
+    if (x <= 0 || y <= 0 || x >= width || y >= high) {
+        return true;
     }
+    for (int i = 0; i < numofBorder; i++)
+    {
+        if (x == border[i][0] && y == border[i][1])
+            return true;
+    }
+    
+    return false;
+    
 }
 
 bool Game::checkFood(int x, int y){
@@ -337,21 +371,22 @@ bool Game::checkSnake(int x, int y){
 bool Game::checkEnemy(int x, int y , int num){
     for (int i = 0; i < numofSnake; i++)
     {
-        if (i!=num)
+        if (i != num)
         {
             if (snake[i].getAlive())
             {
                 for (int j = 0; j < snake[i].getBody(); j++)
                 {
-                    if(snake[i].getTailX(j)==x&&snake[i].getTailY(j)==y){
+                    if (snake[i].getTailX(j) == x && snake[i].getTailY(j) == y) {
                         return true;
                     }
                 }
             }
-            
+
         }
-        
+
     }
+    return false;
     
 }
 
@@ -440,6 +475,7 @@ void Game::stady(){
             rr.push_back(tmp);
             inp[0]=2;
             Input(inp);
+            break;
          }
         case 'S':case 's':
         {
@@ -447,6 +483,7 @@ void Game::stady(){
             rr.push_back(tmp);
             inp[0]=3;
             Input(inp);
+            break;
         }
         default:
             break;

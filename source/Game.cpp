@@ -19,6 +19,81 @@ bool operator==(const std::vector<int>& left, const std::vector<int>& right){
     
 }
 
+
+Game::Game(int n, int high, int width) {
+    if (n * 4 > (high - 2)* (-2 + width))
+    {
+        std::cout << "Error (space)!\n";
+        exit(1);
+    }
+    int stepX, stepY;
+    stepX = 0;
+    stepY = int((high - 2) / (n + 2));
+
+    snake = new Snake[n];
+    for (int i = 0; i < n; i++)
+    {
+        snake[i] = Snake(i, width / 2 /*(n + 1) + stepX * i*/, int(high / (n + 1)) + i * stepY);
+    }
+
+    this->high = high;
+    this->width = width;
+    this->numofSnake = n;
+
+    radius = 0;
+    char a;
+
+
+    std::cout << "Do u want add border?\n";
+    std::cin >> a;
+    if (a == 'y' || a == 'Y') {
+        std::cout << "How much?";
+        std::cin >> numofBorder;
+        border = new int* [numofBorder];
+        for (int i = 0; i < numofBorder; i++)
+        {
+            border[i] = new int[2];
+            std::cout << "Enter coord x: \n";
+            std::cin >> border[i][0];
+            std::cout << "Enter coord y: \n";
+            std::cin >> border[i][1];
+            if (checkBorder(border[i][0], border[i][1]) || checkSnake(border[i][0], border[i][1]))
+            {
+                std::cout << "Error! This border can't be used!\n";
+                delete[] border[i];
+                i--;
+            }
+        }
+
+        std::cout << "Complite!\n";
+    }
+    else
+    {
+        numofBorder = 0;
+    }
+    if ((width - 2) * (high - 2) > 100)
+        numofFood = int((width - 2) * (high - 2) / 100);
+    else
+        numofFood = int(width * high / 10);
+    food = new int* [numofFood];
+    srand(time(NULL));
+    for (int i = 0; i < numofFood; i++)
+    {
+        food[i] = new int[2];
+        food[i][0] = rand() % (width - 2) + 1;//0 - Ox
+        food[i][1] = rand() % (high - 2) + 1;//1 - Oy
+        while (/*checkFood(food[i][0], food[i][1]) ||*/ checkBorder(food[i][0], food[i][1]) || checkSnake(food[i][0], food[i][1]))
+        {
+            food[i][0] = rand() % (width - 2) + 1;//0 - Ox
+            food[i][1] = rand() % (high - 2) + 1;//1 - Oy         
+        
+        }
+
+    }
+    numofAlive = numofSnake;
+    step = 0;
+}
+
 Game::Game(int n, int r, int high, int width){
     if (n*4>(high-2)*(-2+width))
     {
@@ -96,12 +171,17 @@ Game::Game(int n, int r, int high, int width){
 
 Game::~Game(){
     delete[] snake;
+    if(radius>0)
     delete[] scan;
-    for (int i = 0; i < numofBorder; i++)
-    {
-        delete[] border[i];
+    if (numofBorder > 0) {
+        for (int i = 0; i < numofBorder; i++)
+        {
+            delete[] border[i];
+        }
+   
+        delete[] border;
     }
-    delete[] border;
+
     for (int i = 0; i < numofFood; i++)
     {
         delete[] food[i];
@@ -344,11 +424,9 @@ bool Game::checkFood(int x, int y){
         if (food[i][0]==x&&food[i][1]==y)
         {
             return true;
-        }else
-        {
-            return false;
         }
     }
+    return false;
 }
 
 bool Game::checkSnake(int x, int y){

@@ -3,7 +3,8 @@
 #include "../header/Snake.h"
 
 class Game{
-    public:
+public:
+    Game(int n, int high, int width);
     Game(int n, int r, int high,int width);
     ~Game();
 
@@ -49,7 +50,7 @@ class Game{
     int high;
     int width;
     int** border;
-    int numofBorder;
+    int numofBorder = 0;
     int numofFood;
     int** food;
     int numofAlive;

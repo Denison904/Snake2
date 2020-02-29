@@ -49,7 +49,18 @@ int main(){
             // NNSimple();
             break;
         case 'g': case 'G':
-            break;
+        {
+            int n, w, h, r;
+            std::cout << "Enter number of snake\n";
+            std::cin >> n;
+            std::cout << "Enter widht and high of map\n";
+            std::cin >> w >> h;
+            std::cout << "Enter radius\n";
+            std::cin >> r;
+            Game game(n, r, h, w);
+
+        }
+        break;
         case 's': case 'S':{
         //   Stady();
             int r, h, w;
@@ -63,6 +74,32 @@ int main(){
            //  delete &game;
            }
             break;
+        case 'r': case 'R':
+        {
+            int n, w, h;
+            std::cout << "Enter number of snake, high and width\n";
+            std::cin >> n>> h>> w;
+            Game gameR(n, h, w);
+            std::vector<int> inp;
+            inp.resize(n);
+            char tmp;
+            do
+            {
+                gameR.Drow();
+                for (int i = 0; i < n; i++)
+                {
+                    inp[i] = rand() % 4;
+                }
+                gameR.Input(inp);
+                gameR.Logic();
+               // _sleep(800);
+                //getchar();
+                std::cin >> tmp;
+            } while (gameR.getNumAlive()>0);
+            std::cout << "Game Over\n";
+            
+        }
+        break;
     default:
         break;
     }

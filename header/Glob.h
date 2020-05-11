@@ -9,3 +9,6 @@
 #include <string>
 #include <cstdlib>
 #include <stdio.h>
+#include <iomanip>
+#include <omp.h>
+#include <conio.h>

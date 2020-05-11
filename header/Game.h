@@ -21,12 +21,13 @@ public:
 
     void Logic();
     void Drow();
+    void Input(std::vector<std::vector<int>> x);
     void Input(std::vector<int> x);
 
     void newFood(int num);//NEED UPGRADE THIS FUNCTION
     void generateCurrentFood(int index);
 
-    std::vector<int> Scan(int num);
+    std::vector<int> getScan(int num);
 
     bool checkBorder(int x, int y);
     bool checkFood(int x, int y);
@@ -35,11 +36,12 @@ public:
     bool checkHead(int x, int y, int num);
     
 //  function for study and save
-    void stady();
+
     void SaveGame(std::vector<int*> rr, std::vector<int**> F, std::vector<std::vector<int>> scanData);
-    bool searchFileFood();
 
     int getNumAlive();
+
+
 
 //  bool operator==(const std::vector<int>& left, const std::vector<int>& right);
     private:
@@ -53,6 +55,6 @@ public:
     int numofBorder = 0;
     int numofFood;
     int** food;
-    int numofAlive;
-    int step;
+    int numofAlive = 1 ;
+    std::vector<int> step;
 };

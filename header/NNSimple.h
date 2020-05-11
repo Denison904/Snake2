@@ -1,39 +1,41 @@
 #pragma once
 #include "Glob.h"
+
 //#include "Layer.h"
 
 class NNSimple{
 public:
     NNSimple();
     NNSimple(std::vector<int> width);
+    NNSimple(std::string filename);
+    NNSimple(std::string input, std::string answer);
+
 
     void setInput(std::vector<double> input);
+    void setInput(std::vector<int> input);
     std::vector<double> getOutput();
     void ForwardfeedSimple();
-    std::vector<double> proiz(const std::vector<std::vector<double>>&w, const std::vector<double>&v, const std::vector<double> &h);
-
-
+    
     double act(double x);
-
-
+    
     void BackPropagetion(std::vector<double> rr);
+    void BackPropagetionITMO(std::vector<double> rr);
     double diff(double x);
+    double diff(double x, int n, int p, int m);
     double Error(std::vector<double> rr);
-
     double PI();
-    //  //bool operator==(const std::vector<double>& left, const std::vector<double>& right);
-    //  std::vector<double> operator*(const std::vector<std::vector<double>>& left, const std::vector<double>& right);
-    //  std::vector<double> operator-(const std::vector<double> &right);
+    
+    void Save(std::string filename);
 
-    void test();
+
+    double Arg(int i, int j);
+    
 private:
-    //std::vector<Layer> layer;
     std::vector<std::vector<double>> value;
     std::vector<std::vector<std::vector<double>>> weights;
-    std::vector<std::vector<double>> h;
+    std::vector<std::vector<double>> treshold;
     double eps = pow(10,-6);
     double sumError = 0;
-    std::vector<std::vector<double>> Error;
-    double learningRate = 1*pow(10,-4);
+    double learningRate = 1*pow(10,-1);
     double pi = 0 ;
 };
